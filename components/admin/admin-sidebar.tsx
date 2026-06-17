@@ -22,7 +22,7 @@ export function AdminSidebar() {
     <div className="flex h-full w-64 flex-col border-r border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
       <div className="flex h-16 items-center px-6">
         <Link href="/admin" className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
-          AdminCMS
+          Admin
         </Link>
       </div>
 
