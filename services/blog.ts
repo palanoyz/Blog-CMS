@@ -95,3 +95,21 @@ export async function incrementBlogViewCount(id: string) {
     },
   });
 }
+
+export async function getAdminStats() {
+  const [blogCount, pendingCommentCount, totalViews] = await Promise.all([
+    prisma.blog.count(),
+    prisma.comment.count({ where: { status: "PENDING" } }),
+    prisma.blog.aggregate({
+      _sum: {
+        viewCount: true,
+      },
+    }),
+  ]);
+
+  return {
+    blogCount,
+    pendingCommentCount,
+    totalViews: totalViews._sum.viewCount || 0,
+  };
+}

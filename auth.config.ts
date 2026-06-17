@@ -10,9 +10,12 @@ export const authConfig = {
       const isAdminPage = nextUrl.pathname.startsWith("/admin");
       const isLoginPage = nextUrl.pathname === "/admin/login";
       
-      if (isAdminPage && !isLoginPage) {
-        if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
+      if (isAdminPage) {
+        if (isLoginPage) {
+          if (isLoggedIn) return Response.redirect(new URL("/admin", nextUrl));
+          return true;
+        }
+        return isLoggedIn; // Returns true if logged in, otherwise triggers redirect to signIn page
       }
       return true;
     },
