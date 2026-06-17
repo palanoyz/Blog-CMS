@@ -75,14 +75,12 @@ export default async function PublicBlogListingPage({ searchParams }: PageProps)
           {pagination.totalPages > 1 && (
             <div className="mt-12 flex items-center justify-center gap-2">
               <Link
-                href={`/?page=${pagination.currentPage - 1}${
-                  search ? `&search=${search}` : ""
-                }`}
-                className={`rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900 ${
-                  !pagination.hasPrevPage
+                href={`/?page=${pagination.currentPage - 1}${search ? `&search=${search}` : ""
+                  }`}
+                className={`rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900 ${!pagination.hasPrevPage
                     ? "pointer-events-none opacity-50"
                     : ""
-                }`}
+                  }`}
               >
                 Previous
               </Link>
@@ -90,14 +88,12 @@ export default async function PublicBlogListingPage({ searchParams }: PageProps)
                 Page {pagination.currentPage} of {pagination.totalPages}
               </span>
               <Link
-                href={`/?page=${pagination.currentPage + 1}${
-                  search ? `&search=${search}` : ""
-                }`}
-                className={`rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900 ${
-                  !pagination.hasNextPage
+                href={`/?page=${pagination.currentPage + 1}${search ? `&search=${search}` : ""
+                  }`}
+                className={`rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900 ${!pagination.hasNextPage
                     ? "pointer-events-none opacity-50"
                     : ""
-                }`}
+                  }`}
               >
                 Next
               </Link>

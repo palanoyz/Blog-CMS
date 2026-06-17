@@ -53,3 +53,45 @@ export async function getPublishedBlogs({
     },
   };
 }
+
+export async function getBlogBySlug(slug: string) {
+  return await prisma.blog.findUnique({
+    where: {
+      slug,
+      status: "PUBLISHED",
+    },
+    include: {
+      images: {
+        select: {
+          id: true,
+          imageUrl: true,
+        },
+      },
+      comments: {
+        where: {
+          status: "APPROVED",
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        select: {
+          id: true,
+          senderName: true,
+          message: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
+}
+
+export async function incrementBlogViewCount(id: string) {
+  return await prisma.blog.update({
+    where: { id },
+    data: {
+      viewCount: {
+        increment: 1,
+      },
+    },
+  });
+}
