@@ -113,3 +113,23 @@ export async function getAdminStats() {
     totalViews: totalViews._sum.viewCount || 0,
   };
 }
+
+export async function getAllBlogs() {
+  return await prisma.blog.findMany({
+    where: {
+      deletedAt: null,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      status: true,
+      viewCount: true,
+      publishedAt: true,
+      createdAt: true,
+    },
+  });
+}

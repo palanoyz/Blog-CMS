@@ -31,10 +31,16 @@ model Blog {
   viewCount   Int         @default(0)
   status      BlogStatus  @default(DRAFT)
   publishedAt DateTime?
+  deletedAt   DateTime?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   images      BlogImage[]
   comments    Comment[]
+
+  @@index([status])
+  @@index([slug])
+  @@index([publishedAt])
+  @@index([deletedAt])
 }
 
 model BlogImage {
