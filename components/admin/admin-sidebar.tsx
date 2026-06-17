@@ -2,15 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  FileText, 
-  MessageSquare, 
-  LogOut, 
-  Settings 
+import {
+  LayoutDashboard,
+  FileText,
+  MessageSquare
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { signOut } from "next-auth/react";
 
 const navigation = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -28,7 +25,7 @@ export function AdminSidebar() {
           AdminCMS
         </Link>
       </div>
-      
+
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navigation.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -45,9 +42,9 @@ export function AdminSidebar() {
             >
               <item.icon
                 className={cn(
-                  "mr-3 h-5 w-5 flex-shrink-0 transition-colors",
-                  isActive 
-                    ? "text-neutral-900 dark:text-neutral-50" 
+                  "mr-3 h-5 w-5 shrink-0 transition-colors",
+                  isActive
+                    ? "text-neutral-900 dark:text-neutral-50"
                     : "text-neutral-400 group-hover:text-neutral-500 dark:group-hover:text-neutral-300"
                 )}
               />
@@ -56,16 +53,6 @@ export function AdminSidebar() {
           );
         })}
       </nav>
-
-      <div className="border-t border-neutral-200 p-4 dark:border-neutral-800">
-        <button
-          onClick={() => signOut({ callbackUrl: "/" })}
-          className="group flex w-full items-center rounded-md px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-red-50 hover:text-red-600 transition-colors dark:text-neutral-400 dark:hover:bg-red-950/30 dark:hover:text-red-400"
-        >
-          <LogOut className="mr-3 h-5 w-5 flex-shrink-0 text-neutral-400 group-hover:text-red-500 dark:group-hover:text-red-400" />
-          Logout
-        </button>
-      </div>
     </div>
   );
 }
