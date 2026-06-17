@@ -29,7 +29,7 @@ export default async function AdminBlogsPage() {
         </div>
         <Link href="/admin/blogs/new">
           <Button>
-            <Plus className="mr-2 h-4 w-4" /> New Blog
+            <Plus className="h-4 w-4" /> New Blog
           </Button>
         </Link>
       </div>

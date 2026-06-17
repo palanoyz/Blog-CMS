@@ -1,0 +1,42 @@
+"use server";
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+import { createBlog } from "@/services/blog";
+import { BlogSchema } from "@/lib/validations";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/db";
+import { z } from "zod";
+
+export async function createBlogAction(formData: any) {
+  const validatedFields = BlogSchema.safeParse(formData);
+
+  if (!validatedFields.success) {
+    return {
+      error: z.treeifyError(validatedFields.error),
+    };
+  }
+
+  // Check if slug is unique
+  const existingBlog = await prisma.blog.findUnique({
+    where: { slug: validatedFields.data.slug },
+  });
+
+  if (existingBlog) {
+    return {
+      error: { properties: { slug: { errors: ["This slug is already in use."] } } } as any,
+    };
+  }
+
+  try {
+    await createBlog(validatedFields.data as any);
+  } catch (error) {
+    console.error("Error creating blog:", error);
+    return {
+      error: { errors: ["Failed to create blog. Please try again later."] } as any,
+    };
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin/blogs");
+  redirect("/admin/blogs");
+}

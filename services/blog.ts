@@ -133,3 +133,31 @@ export async function getAllBlogs() {
     },
   });
 }
+
+export async function createBlog(data: {
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  coverImage: string;
+  status: "DRAFT" | "PUBLISHED" | "UNPUBLISHED";
+  images?: string[];
+}) {
+  const { images, ...blogData } = data;
+
+  return await prisma.$transaction(async (tx) => {
+    const blog = await tx.blog.create({
+      data: {
+        ...blogData,
+        publishedAt: blogData.status === "PUBLISHED" ? new Date() : null,
+        images: images && images.length > 0 
+          ? {
+              create: images.map((url) => ({ imageUrl: url })),
+            }
+          : undefined,
+      },
+    });
+
+    return blog;
+  });
+}

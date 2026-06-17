@@ -19,16 +19,18 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full w-64 flex-col border-r border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
-      <div className="flex h-16 items-center px-6">
+    <div className="flex flex-col h-full bg-white dark:bg-neutral-900">
+      <div className="flex h-16 items-center px-6 shrink-0">
         <Link href="/admin" className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
           Admin
         </Link>
       </div>
 
-      <nav className="flex-1 space-y-1 px-3 py-4">
+      <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
         {navigation.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+          const isActive = item.href === "/admin" 
+            ? pathname === "/admin" 
+            : pathname === item.href || pathname.startsWith(item.href + "/");
           return (
             <Link
               key={item.name}
