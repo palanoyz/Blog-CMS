@@ -1,0 +1,55 @@
+import { prisma } from "@/lib/db";
+import { BlogStatus } from "@prisma/client";
+
+const BLOGS_PER_PAGE = 10;
+
+export async function getPublishedBlogs({
+  page = 1,
+  search = "",
+}: {
+  page?: number;
+  search?: string;
+} = {}) {
+  const skip = (page - 1) * BLOGS_PER_PAGE;
+
+  const where = {
+    status: "PUBLISHED" as BlogStatus,
+    title: {
+      contains: search,
+      mode: "insensitive" as const,
+    },
+  };
+
+  const [blogs, totalCount] = await Promise.all([
+    prisma.blog.findMany({
+      where,
+      orderBy: {
+        publishedAt: "desc",
+      },
+      skip,
+      take: BLOGS_PER_PAGE,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        coverImage: true,
+        publishedAt: true,
+      },
+    }),
+    prisma.blog.count({ where }),
+  ]);
+
+  const totalPages = Math.ceil(totalCount / BLOGS_PER_PAGE);
+
+  return {
+    blogs,
+    pagination: {
+      currentPage: page,
+      totalPages,
+      totalCount,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    },
+  };
+}
