@@ -19,6 +19,7 @@ import { Plus, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { flattenZodError } from "@/lib/utils";
+import { ImageUploader } from "./image-uploader";
 
 interface BlogFormProps {
   initialData?: {
@@ -150,13 +151,20 @@ export function BlogForm({ initialData }: BlogFormProps = {}) {
 
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="coverImage">Cover Image URL</Label>
-          <Input
-            id="coverImage"
-            value={formData.coverImage}
-            onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-            placeholder="https://example.com/image.jpg"
-          />
+          <Label htmlFor="coverImage">Cover Image</Label>
+          <div className="flex gap-2">
+            <Input
+              id="coverImage"
+              value={formData.coverImage}
+              onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+              placeholder="https://example.com/image.jpg"
+              className="flex-1"
+            />
+            <ImageUploader
+              folder="covers"
+              onUploadComplete={(url) => setFormData((prev) => ({ ...prev, coverImage: url }))}
+            />
+          </div>
           {errors.coverImage && <p className="text-xs text-red-500">{errors.coverImage[0]}</p>}
         </div>
         <div className="space-y-2">
@@ -181,15 +189,25 @@ export function BlogForm({ initialData }: BlogFormProps = {}) {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <Label>Gallery Images (Max 6)</Label>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleAddImage}
-            disabled={formData.images.length >= 6}
-          >
-            <Plus className="h-4 w-4" /> Add Image
-          </Button>
+          <div className="flex gap-2">
+            <ImageUploader
+              folder="gallery"
+              onUploadComplete={(url) => {
+                if (formData.images.length >= 6) return;
+                setFormData((prev) => ({ ...prev, images: [...prev.images, url] }));
+              }}
+              disabled={formData.images.length >= 6}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleAddImage}
+              disabled={formData.images.length >= 6}
+            >
+              <Plus className="h-4 w-4" /> Add URL
+            </Button>
+          </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {formData.images.map((url, index) => (

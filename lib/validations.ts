@@ -10,6 +10,7 @@ export const BlogSchema = z.object({
   content: z.string().min(1, "Content is required"),
   coverImage: z.url("Invalid cover image URL"),
   status: BlogStatusSchema.default("DRAFT"),
+  images: z.array(z.string()).optional(),
 });
   
 export const BlogImageSchema = z.object({
