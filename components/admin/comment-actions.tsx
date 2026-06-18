@@ -5,7 +5,7 @@ import { approveComment, rejectComment } from "@/lib/actions/comment";
 import { Button } from "@/components/ui/button";
 import { Check, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { CommentStatus } from "@prisma/client";
+import { CommentStatus } from "@/app/generated/prisma/enums";
 
 interface CommentActionsProps {
   id: string;
