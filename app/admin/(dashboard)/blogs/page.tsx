@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Eye, Trash2 } from "lucide-react";
+import { Plus, Edit, Eye } from "lucide-react";
+import { DeleteBlogButton } from "@/components/admin/delete-blog-button";
 
 export default async function AdminBlogsPage() {
   const blogs = await getAllBlogs();
@@ -94,9 +95,7 @@ export default async function AdminBlogsPage() {
                           <Edit className="h-4 w-4" />
                         </Button>
                       </Link>
-                      <Button variant="ghost" size="icon" className="text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <DeleteBlogButton id={blog.id} title={blog.title} />
                     </div>
                   </TableCell>
                 </TableRow>

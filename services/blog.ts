@@ -161,3 +161,12 @@ export async function createBlog(data: {
     return blog;
   });
 }
+
+export async function deleteBlog(id: string) {
+  return await prisma.blog.update({
+    where: { id },
+    data: {
+      deletedAt: new Date(),
+    },
+  });
+}

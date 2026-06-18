@@ -1,6 +1,6 @@
 "use server";
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-import { createBlog } from "@/services/blog";
+import { createBlog, deleteBlog } from "@/services/blog";
 import { BlogSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -39,4 +39,16 @@ export async function createBlogAction(formData: any) {
   revalidatePath("/");
   revalidatePath("/admin/blogs");
   redirect("/admin/blogs");
+}
+
+export async function deleteBlogAction(id: string) {
+  try {
+    await deleteBlog(id);
+    revalidatePath("/");
+    revalidatePath("/admin/blogs");
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting blog:", error);
+    return { error: "Failed to delete blog." };
+  }
 }
