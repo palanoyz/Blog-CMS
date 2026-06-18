@@ -13,9 +13,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Eye } from "lucide-react";
 import { DeleteBlogButton } from "@/components/admin/delete-blog-button";
+import { RestoreBlogButton } from "@/components/admin/restore-blog-button";
 
-export default async function AdminBlogsPage() {
-  const blogs = await getAllBlogs();
+interface PageProps {
+  searchParams: Promise<{
+    trash?: string;
+  }>;
+}
+
+export default async function AdminBlogsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const showDeleted = params.trash === "true";
+  const blogs = await getAllBlogs({ showDeletedOnly: showDeleted });
 
   return (
     <div className="space-y-6">
@@ -35,6 +44,30 @@ export default async function AdminBlogsPage() {
         </Link>
       </div>
 
+      {/* Tabs */}
+      <div className="flex border-b border-neutral-200 dark:border-neutral-800">
+        <Link
+          href="/admin/blogs"
+          className={`px-4 py-2 text-sm font-medium border-b-2 -mb-[2px] transition-colors ${
+            !showDeleted
+              ? "border-neutral-900 text-neutral-900 dark:border-neutral-50 dark:text-neutral-50"
+              : "border-transparent text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+          }`}
+        >
+          All Blogs
+        </Link>
+        <Link
+          href="/admin/blogs?trash=true"
+          className={`px-4 py-2 text-sm font-medium border-b-2 -mb-[2px] transition-colors ${
+            showDeleted
+              ? "border-neutral-900 text-neutral-900 dark:border-neutral-50 dark:text-neutral-50"
+              : "border-transparent text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+          }`}
+        >
+          Trash (Deleted)
+        </Link>
+      </div>
+
       <div className="rounded-md border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
         <Table>
           <TableHeader>
@@ -50,7 +83,7 @@ export default async function AdminBlogsPage() {
             {blogs.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
-                  No blogs found. Create your first post!
+                  No blogs found.
                 </TableCell>
               </TableRow>
             ) : (
@@ -85,17 +118,23 @@ export default async function AdminBlogsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Link href={`/blog/${blog.slug}`} target="_blank">
-                        <Button variant="ghost" size="icon">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <Link href={`/admin/blogs/${blog.id}/edit`}>
-                        <Button variant="ghost" size="icon">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <DeleteBlogButton id={blog.id} title={blog.title} />
+                      {showDeleted ? (
+                        <RestoreBlogButton id={blog.id} title={blog.title} />
+                      ) : (
+                        <>
+                          <Link href={`/blog/${blog.slug}`} target="_blank">
+                            <Button variant="ghost" size="icon">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Link href={`/admin/blogs/${blog.id}/edit`}>
+                            <Button variant="ghost" size="icon">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <DeleteBlogButton id={blog.id} title={blog.title} />
+                        </>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -107,3 +146,4 @@ export default async function AdminBlogsPage() {
     </div>
   );
 }
+

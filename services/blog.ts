@@ -100,7 +100,7 @@ export async function incrementBlogViewCount(id: string) {
 
 export async function getAdminStats() {
   const [blogCount, pendingCommentCount, totalViews] = await Promise.all([
-    prisma.blog.count(),
+    prisma.blog.count({ where: { deletedAt: null } }),
     prisma.comment.count({ where: { status: "PENDING" } }),
     prisma.blog.aggregate({
       _sum: {
@@ -116,10 +116,10 @@ export async function getAdminStats() {
   };
 }
 
-export async function getAllBlogs() {
+export async function getAllBlogs({ showDeletedOnly = false }: { showDeletedOnly?: boolean } = {}) {
   return await prisma.blog.findMany({
     where: {
-      deletedAt: null,
+      deletedAt: showDeletedOnly ? { not: null } : null,
     },
     orderBy: {
       createdAt: "desc",
@@ -169,6 +169,15 @@ export async function deleteBlog(id: string) {
     where: { id },
     data: {
       deletedAt: new Date(),
+    },
+  });
+}
+
+export async function restoreBlog(id: string) {
+  return await prisma.blog.update({
+    where: { id },
+    data: {
+      deletedAt: null,
     },
   });
 }

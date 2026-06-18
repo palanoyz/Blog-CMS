@@ -1,6 +1,6 @@
 "use server";
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-import { createBlog, deleteBlog, updateBlog } from "@/services/blog";
+import { createBlog, deleteBlog, updateBlog, restoreBlog } from "@/services/blog";
 import { BlogSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -90,4 +90,17 @@ export async function updateBlogAction(id: string, formData: any) {
   revalidatePath("/admin/blogs");
   redirect("/admin/blogs");
 }
+
+export async function restoreBlogAction(id: string) {
+  try {
+    await restoreBlog(id);
+    revalidatePath("/");
+    revalidatePath("/admin/blogs");
+    return { success: true };
+  } catch (error) {
+    console.error("Error restoring blog:", error);
+    return { error: "Failed to restore blog." };
+  }
+}
+
 
