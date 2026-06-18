@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { BlogStatus } from "@prisma/client";
+import { BlogStatus } from "@/app/generated/prisma/enums";
 
 const BLOGS_PER_PAGE = 10;
 

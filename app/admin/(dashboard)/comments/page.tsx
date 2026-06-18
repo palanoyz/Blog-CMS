@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { format } from "date-fns";
 import Link from "next/link";
-import { CommentStatus } from "@prisma/client";
+import { CommentStatus } from "@/app/generated/prisma/enums";
 import {
   Table,
   TableBody,
