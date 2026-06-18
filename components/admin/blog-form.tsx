@@ -75,7 +75,7 @@ export function BlogForm({ initialData }: BlogFormProps = {}) {
     setFormData({ ...formData, images: newImages });
   };
 
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsPending(true);
     setErrors({});
