@@ -14,6 +14,7 @@ export async function getPublishedBlogs({
 
   const where = {
     status: "PUBLISHED" as BlogStatus,
+    deletedAt: null,
     title: {
       contains: search,
       mode: "insensitive" as const,
@@ -55,10 +56,11 @@ export async function getPublishedBlogs({
 }
 
 export async function getBlogBySlug(slug: string) {
-  return await prisma.blog.findUnique({
+  return await prisma.blog.findFirst({
     where: {
       slug,
       status: "PUBLISHED",
+      deletedAt: null,
     },
     include: {
       images: {
@@ -150,10 +152,10 @@ export async function createBlog(data: {
       data: {
         ...blogData,
         publishedAt: blogData.status === "PUBLISHED" ? new Date() : null,
-        images: images && images.length > 0 
+        images: images && images.length > 0
           ? {
-              create: images.map((url) => ({ imageUrl: url })),
-            }
+            create: images.map((url) => ({ imageUrl: url })),
+          }
           : undefined,
       },
     });
