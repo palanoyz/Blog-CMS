@@ -2,7 +2,7 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createBlogAction } from "@/lib/actions/blog";
+import { createBlogAction, updateBlogAction } from "@/lib/actions/blog";
 import { BlogSchema } from "@/lib/validations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,19 +20,32 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { flattenZodError } from "@/lib/utils";
 
-export function BlogForm() {
+interface BlogFormProps {
+  initialData?: {
+    id: string;
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+    coverImage: string;
+    status: "DRAFT" | "PUBLISHED" | "UNPUBLISHED";
+    images: { id: string; imageUrl: string }[];
+  };
+}
+
+export function BlogForm({ initialData }: BlogFormProps = {}) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
 
   const [formData, setFormData] = useState({
-    title: "",
-    slug: "",
-    excerpt: "",
-    content: "",
-    coverImage: "",
-    status: "DRAFT" as "DRAFT" | "PUBLISHED" | "UNPUBLISHED",
-    images: [] as string[],
+    title: initialData?.title || "",
+    slug: initialData?.slug || "",
+    excerpt: initialData?.excerpt || "",
+    content: initialData?.content || "",
+    coverImage: initialData?.coverImage || "",
+    status: (initialData?.status || "DRAFT") as "DRAFT" | "PUBLISHED" | "UNPUBLISHED",
+    images: initialData?.images.map((img) => img.imageUrl) || ([] as string[]),
   });
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,14 +87,16 @@ export function BlogForm() {
       return;
     }
 
-    const response = await createBlogAction(formData);
+    const response = initialData
+      ? await updateBlogAction(initialData.id, formData)
+      : await createBlogAction(formData);
 
     if (response?.error) {
       setErrors(response.error);
-      toast.error("Failed to create blog.");
+      toast.error(initialData ? "Failed to update blog." : "Failed to create blog.");
       setIsPending(false);
     } else {
-      toast.success("Blog created successfully!");
+      toast.success(initialData ? "Blog updated successfully!" : "Blog created successfully!");
     }
   }
 
@@ -210,9 +225,10 @@ export function BlogForm() {
         </Button>
         <Button type="submit" disabled={isPending}>
           {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Create Blog
+          {initialData ? "Update Blog" : "Create Blog"}
         </Button>
       </div>
     </form>
   );
 }
+

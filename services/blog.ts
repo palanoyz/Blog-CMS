@@ -170,3 +170,58 @@ export async function deleteBlog(id: string) {
     },
   });
 }
+
+export async function getBlogById(id: string) {
+  return await prisma.blog.findUnique({
+    where: { id },
+    include: {
+      images: {
+        select: {
+          id: true,
+          imageUrl: true,
+        },
+      },
+    },
+  });
+}
+
+export async function updateBlog(
+  id: string,
+  data: {
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+    coverImage: string;
+    status: "DRAFT" | "PUBLISHED" | "UNPUBLISHED";
+    images?: string[];
+  }
+) {
+  const { images, ...blogData } = data;
+
+  return await prisma.$transaction(async (tx) => {
+    const blog = await tx.blog.update({
+      where: { id },
+      data: {
+        ...blogData,
+        publishedAt: blogData.status === "PUBLISHED" ? new Date() : null,
+      },
+    });
+
+    await tx.blogImage.deleteMany({
+      where: { blogId: id },
+    });
+
+    if (images && images.length > 0) {
+      await tx.blogImage.createMany({
+        data: images.map((url) => ({
+          blogId: id,
+          imageUrl: url,
+        })),
+      });
+    }
+
+    return blog;
+  });
+}
+
