@@ -106,6 +106,7 @@ export async function getAdminStats() {
       _sum: {
         viewCount: true,
       },
+      where: { deletedAt: null },
     }),
   ]);
 
