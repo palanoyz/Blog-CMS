@@ -80,8 +80,9 @@ export async function updateBlogAction(id: string, formData: any) {
     await updateBlog(id, validatedFields.data as any);
   } catch (error) {
     console.error("Error updating blog:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return {
-      error: { errors: ["Failed to update blog. Please try again later."] } as any,
+      error: { errors: [errorMessage || "Failed to update blog. Please try again later."] } as any,
     };
   }
 

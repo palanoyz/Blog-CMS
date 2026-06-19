@@ -147,15 +147,16 @@ export async function createBlog(data: {
   images?: string[];
 }) {
   const { images, ...blogData } = data;
+  const validImages = images?.filter((url) => url && url.trim().length > 0) || [];
 
   return await prisma.$transaction(async (tx) => {
     const blog = await tx.blog.create({
       data: {
         ...blogData,
         publishedAt: blogData.status === "PUBLISHED" ? new Date() : null,
-        images: images && images.length > 0
+        images: validImages.length > 0
           ? {
-            create: images.map((url) => ({ imageUrl: url })),
+            create: validImages.map((url) => ({ imageUrl: url })),
           }
           : undefined,
       },
@@ -210,6 +211,7 @@ export async function updateBlog(
   }
 ) {
   const { images, ...blogData } = data;
+  const validImages = images?.filter((url) => url && url.trim().length > 0) || [];
 
   return await prisma.$transaction(async (tx) => {
     const blog = await tx.blog.update({
@@ -224,9 +226,9 @@ export async function updateBlog(
       where: { blogId: id },
     });
 
-    if (images && images.length > 0) {
+    if (validImages.length > 0) {
       await tx.blogImage.createMany({
-        data: images.map((url) => ({
+        data: validImages.map((url) => ({
           blogId: id,
           imageUrl: url,
         })),

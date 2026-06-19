@@ -11,7 +11,10 @@ export const BlogSchema = z.object({
   coverImage: z.url("Invalid cover image URL"),
   status: BlogStatusSchema.default("DRAFT"),
   images: z.array(z.string()).optional(),
-});
+}).transform((data) => ({
+  ...data,
+  images: data.images?.filter((url) => url.trim().length > 0),
+}));
   
 export const BlogImageSchema = z.object({
   imageUrl: z.url("Invalid image URL"),
