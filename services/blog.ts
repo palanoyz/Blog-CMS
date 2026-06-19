@@ -149,20 +149,19 @@ export async function createBlog(data: {
   const { images, ...blogData } = data;
   const validImages = images?.filter((url) => url && url.trim().length > 0) || [];
 
-  return await prisma.$transaction(async (tx) => {
-    const blog = await tx.blog.create({
-      data: {
-        ...blogData,
-        publishedAt: blogData.status === "PUBLISHED" ? new Date() : null,
-        images: validImages.length > 0
+  return await prisma.blog.create({
+    data: {
+      ...blogData,
+      publishedAt: blogData.status === "PUBLISHED" ? new Date() : null,
+      images:
+        validImages.length > 0
           ? {
-            create: validImages.map((url) => ({ imageUrl: url })),
+            create: validImages.map((url) => ({
+              imageUrl: url,
+            })),
           }
           : undefined,
-      },
-    });
-
-    return blog;
+    },
   });
 }
 
@@ -213,29 +212,30 @@ export async function updateBlog(
   const { images, ...blogData } = data;
   const validImages = images?.filter((url) => url && url.trim().length > 0) || [];
 
-  return await prisma.$transaction(async (tx) => {
-    const blog = await tx.blog.update({
-      where: { id },
-      data: {
-        ...blogData,
-        publishedAt: blogData.status === "PUBLISHED" ? new Date() : null,
-      },
-    });
-
-    await tx.blogImage.deleteMany({
-      where: { blogId: id },
-    });
-
-    if (validImages.length > 0) {
-      await tx.blogImage.createMany({
-        data: validImages.map((url) => ({
-          blogId: id,
-          imageUrl: url,
-        })),
-      });
-    }
-
-    return blog;
+  const blog = await prisma.blog.update({
+    where: { id },
+    data: {
+      ...blogData,
+      publishedAt:
+        blogData.status === "PUBLISHED"
+          ? new Date()
+          : null,
+    },
   });
+
+  await prisma.blogImage.deleteMany({
+    where: { blogId: id },
+  });
+
+  if (validImages.length > 0) {
+    await prisma.blogImage.createMany({
+      data: validImages.map((url) => ({
+        blogId: id,
+        imageUrl: url,
+      })),
+    });
+  }
+
+  return blog;
 }
 
